@@ -75,10 +75,10 @@ client.authenticate({
 })
 .then(function(payload) {
   console.log('JWT payload', payload);
-  return client.service('random').get(payload.userId);
+  return client.service('random').find();
 })
-.then(function(user) {
-  console.log('User:', user)
+.then(function(randoms) {
+  console.log('Randoms:', randoms)
 })
 .catch(function(error){
   console.error('Error authenticating!', error);
