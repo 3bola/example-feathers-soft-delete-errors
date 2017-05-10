@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0" />
+  </head>
+  <body>
+<h3>Paste to console:</h3>
+<pre><code>// Create user:
+
+const socket = io();
+const client = feathers();
+
+client.configure(feathers.socketio(socket));
+client.configure(feathers.hooks());
+client.configure(feathers.authentication({
+  storage: window.localStorage
+}));
+
+client.service('users').create({ email: 'demo@demo.demo', password: 'demo123' }).then(console.dir).catch(console.dir)
+</code></pre>
+    <pre><code>// Example 1, Log in and get user:
+
+const socket = io();
+const client = feathers();
+
+client.configure(feathers.socketio(socket));
+client.configure(feathers.hooks());
+client.configure(feathers.authentication({
+  storage: window.localStorage
+}));
+var userService = client.service('users');
+
+client.authenticate({
+  email: 'demo@demo.demo',
+  password: 'demo123',
+  strategy: 'local'
+})
+.then(function(response) {
+  console.log('Authenticated!', response);
+  console.log('Your JWT is: ', response.accessToken);
+  return client.passport.verifyJWT(response.accessToken);
+})
+.then(function(payload) {
+  console.log('JWT payload', payload);
+  return client.service('users').get(payload.userId);
+})
+.then(function(user) {
+  console.log('User:', user)
+})
+.catch(function(error){
+  console.error('Error authenticating!', error);
+});
+</code></pre>
+<pre><code>// Example 2, Log in and get randoms:
+
+const socket = io();
+const client = feathers();
+
+client.configure(feathers.socketio(socket));
+client.configure(feathers.hooks());
+client.configure(feathers.authentication({
+  storage: window.localStorage
+}));
+
+client.authenticate({
+  email: 'demo@demo.demo',
+  password: 'demo123',
+  strategy: 'local'
+})
+.then(function(response) {
+  console.log('Authenticated!', response);
+  console.log('Your JWT is: ', response.accessToken);
+  return client.passport.verifyJWT(response.accessToken);
+})
+.then(function(payload) {
+  console.log('JWT payload', payload);
+  return client.service('random').get(payload.userId);
+})
+.then(function(user) {
+  console.log('User:', user)
+})
+.catch(function(error){
+  console.error('Error authenticating!', error);
+});
+</code></pre>
+
+
+    <script src="//npmcdn.com/feathers-client@^2.0.0-pre.1/dist/feathers.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+</html>
